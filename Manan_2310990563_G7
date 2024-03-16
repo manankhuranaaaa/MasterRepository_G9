@@ -1,0 +1,73 @@
+import tkinter as tk
+from math import *
+
+# Create a function to add characters to the input field
+def add_to_expression(symbol):
+    input_text.set(input_text.get() + str(symbol))
+
+# Create a function to evaluate the final expression
+def evaluate_expression():
+    try:
+        input_text.set(eval(input_text.get()))
+    except Exception as e:
+        input_text.set("Error")
+        print(e)
+
+# Create a function to clear the input field
+def clear_expression():
+    input_text.set("")
+
+# Setting up the main window
+window = tk.Tk()
+window.title("Scientific Calculator by Manan Khurana")
+
+# Create a StringVar to keep track of the input
+input_text = tk.StringVar()
+
+# Create the input field
+input_field = tk.Entry(window, textvariable=input_text, font=('Arial', 20), width=22, borderwidth=5)
+input_field.grid(row=0, column=0, columnspan=5, padx=10, pady=10)
+
+# Define buttons
+buttons = [
+    ('7', 1, 1), ('8', 1, 2), ('9', 1, 3), ('/', 1, 4),
+    ('4', 2, 1), ('5', 2, 2), ('6', 2, 3), ('*', 2, 4),
+    ('1', 3, 1), ('2', 3, 2), ('3', 3, 3), ('-', 3, 4),
+    ('0', 4, 1), ('.', 4, 2), ('=', 4, 3), ('+', 4, 4),
+    # Scientific functions
+    ('sin', 5, 1), ('cos', 5, 2), ('tan', 5, 3),
+    ('log', 6, 1), ('sqrt', 6, 2), ('^', 6, 3),
+    ('C', 5, 4), ('(', 6, 4), (')', 7, 4)
+]
+
+# Create buttons using the defined list
+for (text, row, col) in buttons:
+    if text == '=':
+        btn = tk.Button(window, text=text, height=2, width=5, command=evaluate_expression)
+    elif text == 'C':
+        btn = tk.Button(window, text=text, height=2, width=5, command=clear_expression)
+    else:
+        btn = tk.Button(window, text=text, height=2, width=5, command=lambda t=text: add_to_expression(t))
+    
+    btn.grid(row=row, column=col, sticky="nsew")
+
+# Map '^' to power function and add more functions as needed
+def add_functions_to_expression():
+    expression = input_text.get()
+    expression = expression.replace('^', '**')
+    # Add more replacements here if needed
+    try:
+        result = str(eval(expression, {"__builtins__": None}, {"sin": sin, "cos": cos, "tan": tan, "log": log, "sqrt": sqrt, "pow": pow}))
+        input_text.set(result)
+    except Exception as e:
+        input_text.set("Error")
+        print(e)
+
+# Modify the '=' button command for scientific calculations
+window.grid_columnconfigure(0, weight=1)
+for i in range(1, 5):
+    window.grid_columnconfigure(i, weight=1)
+    window.grid_rowconfigure(i, weight=1)
+
+window.mainloop()
+
